@@ -6,42 +6,56 @@ Import "Cjson.lua"
 ////////////////////////////////////////////////
 KeepScreen True
 zm.Init 
-zm.SetFindPic {"sim": 0.9, "timeout": 5000, "delaytime": 1000, "showlog": "显示"}
-zm.SetFindMultiColor {"sim": 1.0, "timeout": 5000, "delaytime": 1000, "showlog": "显示"}
-zm.SetTap {"showlog":"显示"}
-zm.SetCmpColorEx {"sim":1.0, "timeout":500, "delaytime":100, "showlog":"显示"}
+
+// 可选 ["显示","隐藏"]
+Dim need_show_log = "隐藏"
+zm.SetFindPic {"sim": 0.9, "timeout": 5000, "delaytime": 1000, "showlog": need_show_log}
+zm.SetFindMultiColor {"sim": 1.0, "timeout": 5000, "delaytime": 1000, "showlog": need_show_log}
+zm.SetTap {"showlog":need_show_log}
+zm.SetCmpColorEx {"sim":1.0, "timeout":500, "delaytime":100, "showlog":need_show_log}
 
 // 确认屏幕状况
 Dim screen_width = GetScreenX()
 Dim screen_height = GetScreenY()
 Dim screen_orientation_landscape = CBool(GetScreenRotation() Mod 2 = 1)
 
-// 定义静态全局变量
-Dim EMPTY_ARRAY()
-
 // 准备好根目录
 Dim ROOT_FOLDER = GetTempDir()&"workspace/Android_CanTinMengWuYu"
 Dir.Create(ROOT_FOLDER)
 PutAttachment ROOT_FOLDER,"餐厅萌物语配置_模拟器.json"
-PutAttachment ROOT_FOLDER,"餐厅萌物语全部料理.json"
-PutAttachment ROOT_FOLDER,"餐厅萌物语可用料理.json"
-
-////////////////////////////////////////////////
-// 餐厅萌物语的全局配置                        //
-////////////////////////////////////////////////
+PutAttachment ROOT_FOLDER, "餐厅萌物语全部料理.json"
 Dim 餐厅萌物语配置 = Cjson.Decode(zm.FileRead(ROOT_FOLDER&"/餐厅萌物语配置_模拟器.json"))
 Dim 餐厅萌物语料理全部 = Cjson.Decode(zm.FileRead(ROOT_FOLDER&"/餐厅萌物语全部料理.json"))
-Dim 餐厅萌物语料理 = Cjson.Decode(zm.FileRead(ROOT_FOLDER&"/餐厅萌物语可用料理.json"))
+
+// 定义静态全局变量
+Dim EMPTY_ARRAY()
+Dim ROOT_CONFIGS = "https://raw.githubusercontent.com/SimonCat1989/simoncat-anjian-wizard/develop/Android_%E9%A4%90%E5%8E%85%E8%90%8C%E7%89%A9%E8%AF%AD/configs/"
+Dim ROOT_UI_CONFIGS = ROOT_CONFIGS&"ui/"
+Dim ROOT_AVAILABLE_DISHES = ROOT_CONFIGS&"available_dishes/"
+Dim ACCOUNTS = Cjson.Decode(Url.HttpGet({"url": ROOT_CONFIGS&"accounts.json"}))
+Dim SELECTED_ACCOUNT = "SimonCat"
+If Not(IsNull(ACCOUNTS[GetDeviceID()])) Then 
+	SELECTED_ACCOUNT = ACCOUNTS[GetDeviceID()]
+End If
 
 ////////////////////////////////////////////////
-// 餐厅萌物语的 UI 代码                        //
+// 餐厅萌物语的 UI 代码 - 详细配置              //
 ////////////////////////////////////////////////
-Dim 餐厅萌物语界面()
+Dim 餐厅萌物语界面配置 = Cjson.Decode(Url.HttpGet({"url": ROOT_UI_CONFIGS&SELECTED_ACCOUNT&".json"}))
+
+Function GetUIConfigData(UIConfigKey, DefaultValue)
+	If IsNull(餐厅萌物语界面配置[UIConfigKey]) Then 
+		GetUIConfigData = DefaultValue
+	Else 
+		GetUIConfigData = 餐厅萌物语界面配置[UIConfigKey]
+	End If
+End Function
 
 ////////////////////////////////////////////////
 // 通用界面                                    //
 ////////////////////////////////////////////////
-餐厅萌物语界面["通用界面_标题"] = "萌餐厅物语"
+Dim 餐厅萌物语界面()
+餐厅萌物语界面["通用界面_标题"] = "萌餐厅物语UI配置【"&SELECTED_ACCOUNT&"】"
 餐厅萌物语界面["通用界面_标签标题"] = "萌餐厅物语标签"
 餐厅萌物语界面["通用界面_标签列表"] = Array("通用", "店员", "料理", "宣传", "好友")
 Dim 餐厅萌物语界面_详细设置_标签1 = "——————详细设置："
@@ -73,17 +87,18 @@ Next
 餐厅萌物语界面["通用界面_参数_APP重启间隔"] = "通用界面_APP重启间隔"
 餐厅萌物语界面["通用界面_参数_脚本运行间隔"] = "通用界面_脚本运行间隔分钟"
 
-UI.AddCheckBox(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_是否模拟器"], "是否在模拟器上运行餐厅萌物语？", true)
+UI.AddCheckBox(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_是否模拟器"], "是否在模拟器上运行餐厅萌物语？", GetUIConfigData(餐厅萌物语界面["通用界面_参数_是否模拟器"], true))
 InsertNewRow(餐厅萌物语界面["通用标签界面_标题"])
-UI.AddCheckBox(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_是否启动APP"], "是否需要启动餐厅萌物语？", false)
+UI.AddCheckBox(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_是否启动APP"], "是否需要启动餐厅萌物语？", GetUIConfigData(餐厅萌物语界面["通用界面_参数_是否启动APP"], false))
 InsertNewRow(餐厅萌物语界面["通用标签界面_标题"])
 UI.AddTextView(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_APP重启间隔"]&"_标签", "餐厅萌物语APP强制重启间隔分钟：")
-UI.AddEditText(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_APP重启间隔"], "120", 200)
+UI.AddEditText(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_APP重启间隔"], GetUIConfigData(餐厅萌物语界面["通用界面_参数_APP重启间隔"], "120"), 200)
 UI.SetEditInputType(餐厅萌物语界面["通用界面_参数_APP重启间隔"], 2)
 InsertNewRow(餐厅萌物语界面["通用标签界面_标题"])
 UI.AddTextView(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_脚本运行间隔"]&"_标签", "脚本运行间隔分钟：")
-UI.AddEditText(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_脚本运行间隔"], "5", 200)
+UI.AddEditText(餐厅萌物语界面["通用标签界面_标题"], 餐厅萌物语界面["通用界面_参数_脚本运行间隔"], GetUIConfigData(餐厅萌物语界面["通用界面_参数_脚本运行间隔"], "5"), 200)
 UI.SetEditInputType(餐厅萌物语界面["通用界面_参数_脚本运行间隔"], 2)
+
 
 ////////////////////////////////////////////////
 // 店员标签界面                                //
@@ -113,11 +128,11 @@ If Not(screen_orientation_landscape) Then
     店员标签界面_个数上限输入框宽度 = 100
 End If
 UI.AddTextView(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_厨师个数上限"]&"_标签", "厨师：")
-UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_厨师个数上限"], "5", 店员标签界面_个数上限输入框宽度)
+UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_厨师个数上限"], GetUIConfigData(餐厅萌物语界面["店员标签界面_参数_厨师个数上限"], "5"), 店员标签界面_个数上限输入框宽度)
 UI.AddTextView(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_服务员个数上限"]&"_标签", "，服务员：")
-UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_服务员个数上限"], "4", 店员标签界面_个数上限输入框宽度)
+UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_服务员个数上限"], GetUIConfigData(餐厅萌物语界面["店员标签界面_参数_服务员个数上限"], "4"), 店员标签界面_个数上限输入框宽度)
 UI.AddTextView(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_招待个数上限"]&"_标签", "，招待：")
-UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_招待个数上限"], "5", 店员标签界面_个数上限输入框宽度)
+UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_招待个数上限"], GetUIConfigData(餐厅萌物语界面["店员标签界面_参数_招待个数上限"], "5"), 店员标签界面_个数上限输入框宽度)
 UI.SetEditInputType(餐厅萌物语界面["店员标签界面_参数_厨师个数上限"], 2)
 UI.SetEditInputType(餐厅萌物语界面["店员标签界面_参数_服务员个数上限"], 2)
 UI.SetEditInputType(餐厅萌物语界面["店员标签界面_参数_招待个数上限"], 2)
@@ -125,7 +140,7 @@ InsertNewRow(餐厅萌物语界面["店员标签界面_标题"])
 
 // 店员标签 -> 店员工作模式
 UI.AddTextView(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_店员工作模式"]&"_标签", "店员工作模式：")
-UI.AddSpinner(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_店员工作模式"], 餐厅萌物语界面["店员标签界面_店员工作模式列表"], 1)
+UI.AddSpinner(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_店员工作模式"], 餐厅萌物语界面["店员标签界面_店员工作模式列表"], GetUIConfigData(餐厅萌物语界面["店员标签界面_参数_店员工作模式"], 1))
 UI.SetOnClick(餐厅萌物语界面["店员标签界面_参数_店员工作模式"], 店员标签界面_事件_店员工作模式改变)
 
 InsertNewRow(餐厅萌物语界面["店员标签界面_标题"])
@@ -139,9 +154,9 @@ InsertNewRow(餐厅萌物语界面["店员标签界面_标题"])
 // Nothing right now
 
 // 店员标签 -> 店员工作模式 -> 全力料理模式
-UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_料理模式_服务员体力下限"], "46", 200)
+UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_料理模式_服务员体力下限"],  GetUIConfigData(餐厅萌物语界面["店员标签界面_参数_料理模式_服务员体力下限"], "0"), 200)
 UI.AddTextView(餐厅萌物语界面["店员标签界面_标题"], "店员_料理模式_厨师体力下限_标签", " <= 非厨师候选人总体力 <= ")
-UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_料理模式_厨师体力下限"], "130", 200)
+UI.AddEditText(餐厅萌物语界面["店员标签界面_标题"], 餐厅萌物语界面["店员标签界面_参数_料理模式_厨师体力下限"], GetUIConfigData(餐厅萌物语界面["店员标签界面_参数_料理模式_厨师体力下限"], "500"), 200)
 UI.SetEditInputType(餐厅萌物语界面["店员标签界面_参数_料理模式_服务员体力下限"], 2)
 UI.SetEditInputType(餐厅萌物语界面["店员标签界面_参数_料理模式_厨师体力下限"], 2)
 
@@ -169,7 +184,7 @@ UI.AddTextView(餐厅萌物语界面["店员标签界面_标题"], "店员_店�
 
 // 料理标签 -> 料理选择模式
 UI.AddTextView(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_料理选择模式"]&"_标签", "料理选择模式：")
-UI.AddSpinner(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_料理选择模式"], 餐厅萌物语界面["料理标签界面_料理选择模式列表"], 0)
+UI.AddSpinner(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_料理选择模式"], 餐厅萌物语界面["料理标签界面_料理选择模式列表"], GetUIConfigData(餐厅萌物语界面["料理标签界面_参数_料理选择模式"], 0))
 UI.SetOnClick(餐厅萌物语界面["料理标签界面_参数_料理选择模式"], 料理标签界面_事件_料理选择模式改变)
 InsertNewRow(餐厅萌物语界面["料理标签界面_标题"])
 UI.AddTextView(餐厅萌物语界面["料理标签界面_标题"], "料理_料理选择模式_详细设置_标签1", 餐厅萌物语界面_详细设置_标签1)
@@ -182,7 +197,7 @@ InsertNewRow(餐厅萌物语界面["料理标签界面_标题"])
 
 // 料理标签 -> 料理选择模式 -> 消耗体力模式
 UI.AddTextView(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_消耗体力模式_料理选择策略"]&"_标签1", "选择前 ")
-UI.AddEditText(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_消耗体力模式_料理选择策略"], "2", 400)
+UI.AddEditText(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_消耗体力模式_料理选择策略"],  GetUIConfigData(餐厅萌物语界面["料理标签界面_参数_消耗体力模式_料理选择策略"], "2"), 400)
 UI.SetEditInputType(餐厅萌物语界面["料理标签界面_参数_消耗体力模式_料理选择策略"], 2)
 UI.AddTextView(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_消耗体力模式_料理选择策略"]&"_标签2", " 高体力料理")
 
@@ -197,7 +212,7 @@ For Each 料理类别 , 料理类别表格 In 餐厅萌物语料理全部
             zm.ArrayInsert(餐厅萌物语界面["料理标签界面_料理选择模式_待切换组件列表"]["指定料理模式"], InsertNewRow(餐厅萌物语界面["料理标签界面_标题"]))
         End If
         needNewLine = needNewLine + 1
-        UI.AddCheckBox(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_指定料理模式_前缀"]&料理名称, 料理名称, false)
+        UI.AddCheckBox(餐厅萌物语界面["料理标签界面_标题"], 餐厅萌物语界面["料理标签界面_参数_指定料理模式_前缀"]&料理名称, 料理名称, GetUIConfigData(餐厅萌物语界面["料理标签界面_参数_指定料理模式_前缀"]&料理名称, false))
         zm.ArrayInsert(餐厅萌物语界面["料理标签界面_料理选择模式_待切换组件列表"]["指定料理模式"], 餐厅萌物语界面["料理标签界面_参数_指定料理模式_前缀"]&料理名称)
     Next
 Next
@@ -230,7 +245,7 @@ End If
 餐厅萌物语界面["宣传标签界面_是否外出宣传_待切换组件列表"] = zm.Clone(EMPTY_ARRAY)
 
 UI.AddTextView(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_是否需要外出宣传"]&"_标签", "是否需要外出宣传：")
-UI.AddSpinner(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_是否需要外出宣传"], 餐厅萌物语界面["宣传标签界面_是否需要外出宣传列表"], 0)
+UI.AddSpinner(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_是否需要外出宣传"], 餐厅萌物语界面["宣传标签界面_是否需要外出宣传列表"], GetUIConfigData(餐厅萌物语界面["宣传标签界面_参数_是否需要外出宣传"], 0))
 UI.SetOnClick(餐厅萌物语界面["宣传标签界面_参数_是否需要外出宣传"], 宣传标签界面_事件_是否需要外出宣传)
 For Each 外出宣传页码 In 餐厅萌物语配置["外出宣传页面_宣传地点列表页码"]
     InsertNewRow(餐厅萌物语界面["宣传标签界面_标题"])
@@ -244,7 +259,7 @@ For Each 外出宣传页码 In 餐厅萌物语配置["外出宣传页面_宣传�
         End If
         needNewLine = needNewLine + 1
         
-        UI.AddCheckBox(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_指定外出宣传地点前缀"]&宣传地点, 宣传地点, false)
+        UI.AddCheckBox(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_指定外出宣传地点前缀"]&宣传地点, 宣传地点, GetUIConfigData(餐厅萌物语界面["宣传标签界面_参数_指定外出宣传地点前缀"]&宣传地点, false))
         zm.ArrayInsert(餐厅萌物语界面["宣传标签界面_是否外出宣传_待切换组件列表"], 餐厅萌物语界面["宣传标签界面_参数_指定外出宣传地点前缀"]&宣传地点)
     Next
 Next
@@ -260,7 +275,7 @@ For Each 外出宣传页码 In 餐厅萌物语配置["外出宣传页面_宣传�
         End If
         needNewLine = needNewLine + 1
         
-        UI.AddCheckBox(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_指定友情协助地点前缀"]&宣传地点, 宣传地点, false)
+        UI.AddCheckBox(餐厅萌物语界面["宣传标签界面_标题"], 餐厅萌物语界面["宣传标签界面_参数_指定友情协助地点前缀"]&宣传地点, 宣传地点, GetUIConfigData(餐厅萌物语界面["宣传标签界面_参数_指定友情协助地点前缀"]&宣传地点, false))
         zm.ArrayInsert(餐厅萌物语界面["宣传标签界面_是否外出宣传_待切换组件列表"], 餐厅萌物语界面["宣传标签界面_参数_指定友情协助地点前缀"]&宣传地点)
     Next
 Next
@@ -326,7 +341,7 @@ UI.AddCheckBox(餐厅萌物语界面["好友标签界面_标题"], 餐厅萌物�
 InsertNewRow(餐厅萌物语界面["好友标签界面_标题"])
 UI.AddTextView(餐厅萌物语界面["好友标签界面_标题"], 餐厅萌物语界面["好友标签界面_收获好友资源模式详细设置标签"]&"4", 餐厅萌物语界面_详细设置_标签3)
 
-UI.Show("萌餐厅物语")
+UI.Show(餐厅萌物语界面["通用界面_标题"])
 
 Function InsertNewRow(name)
     Dim id = "new_row_" & zm.RndStr(4, 1 + 2 + 4, true)
@@ -388,6 +403,10 @@ Function 好友标签界面_事件_开启收获好友资源模式()
     Next
 End Function
 
+////////////////////////////////////////////////
+// 餐厅萌物语的全局配置                        //
+////////////////////////////////////////////////
+Dim 餐厅萌物语料理 = Cjson.Decode(Url.HttpGet({"url": ROOT_AVAILABLE_DISHES&SELECTED_ACCOUNT&".json"}))
 Dim 餐厅萌物语全局参数()
 餐厅萌物语全局参数["通用_是否模拟器"] = zm.GetUIValue(餐厅萌物语界面["通用界面_参数_是否模拟器"])
 餐厅萌物语全局参数["通用_脚本运行间隔分钟"] = CInt(zm.GetUIValue(餐厅萌物语界面["通用界面_参数_脚本运行间隔"]))
@@ -534,7 +553,7 @@ Else
     End If
     
     Thread.SetShareVar("餐厅萌物语_发现卡屏", "false")
-    Dim 餐厅萌物语主线程 = Thread.Start(餐厅萌物语_防卡屏检测, 餐厅萌物语全局参数["通用_APP强制重启间隔分钟"] * 60)
+//    Dim 餐厅萌物语主线程 = Thread.Start(餐厅萌物语_防卡屏检测, 餐厅萌物语全局参数["通用_APP强制重启间隔分钟"] * 60)
     While True
         If Thread.GetShareVar("餐厅萌物语_发现卡屏") = "true" Then 
             Thread.SetShareVar("餐厅萌物语_发现卡屏", "false")
@@ -551,10 +570,25 @@ Else
         餐厅萌物语_调整店员()
         Delay 2000
         餐厅萌物语_开始料理()
-        	
+        
+        zm.CollectGarbage()
         SetupCountdownMessage("餐厅萌物语", 60 * 餐厅萌物语全局参数["通用_脚本运行间隔分钟"])
     Wend
 End If
+
+//Function 餐厅萌物语_调度程序(通用_APP强制重启间隔)
+//    Dim 当前时间 = Time()
+//    While True
+//        //  Or zm.IsDisplayDead(0, 0, screen_width, screen_height, 5000, 0.8)
+//        If (Time() - 餐厅萌物语_启动时间戳) > 通用_APP强制重启间隔 Then 
+//            KillApp "com.catstudio.moegirlcafe2"
+//            Thread.SetShareVar("餐厅萌物语_调度程序_", "true")
+//            餐厅萌物语_启动时间戳 = Time()
+//        Else 
+//            Delay 600000
+//        End If
+//    Wend
+//End Function
 
 /**
 处理启动
@@ -593,20 +627,6 @@ Function 餐厅萌物语_启动()
 	
     Delay 1000
     zm.Swipe 975, 1355, 650, 1766, 500
-End Function
-
-Function 餐厅萌物语_防卡屏检测(通用_APP强制重启间隔)
-    Dim 餐厅萌物语_启动时间戳 = Time()
-    While True
-        //  Or zm.IsDisplayDead(0, 0, screen_width, screen_height, 5000, 0.8)
-        If (Time() - 餐厅萌物语_启动时间戳) > 通用_APP强制重启间隔 Then 
-            KillApp "com.catstudio.moegirlcafe2"
-            Thread.SetShareVar("餐厅萌物语_发现卡屏", "true")
-            餐厅萌物语_启动时间戳 = Time()
-        Else 
-            Delay 600000
-        End If
-    Wend
 End Function
 
 Function 餐厅萌物语_收获料理()
@@ -667,6 +687,7 @@ Function 餐厅萌物语_调整店员()
             // 岗位分配完毕，仍有休息室空位的话
             If 餐厅萌物语全局参数["店员设置页面_店员工位已分配"]["休息室"] < 餐厅萌物语全局参数["店员设置页面_店员工位上限"]["休息室"] Then 
                 zm.FindMultiColor(餐厅萌物语配置["店员设置页面_休息室按钮"], True, "@店员设置页面_休息室按钮")
+                Delay 500
                 If zm.FindMultiColor(餐厅萌物语配置["店员设置页面_待机店员按钮"], True, "@店员设置页面_待机店员按钮") Then 
                     餐厅萌物语_工具_遍历所有店员("餐厅萌物语_工具_给低体力待机店员分配休息")
                 End If
@@ -1233,7 +1254,7 @@ Function 餐厅萌物语_工具_处理好友页面()
         Dim 上楼按钮 = zm.FindPic(餐厅萌物语配置["好友页面_上楼按钮"], 130, 1700, 400, 1915, False, "@好友页面_上楼按钮")
         If ((餐厅萌物语全局参数["好友页面_是否浇水花朵"] And 餐厅萌物语全局参数["好友页面_已浇水次数"] < 餐厅萌物语全局参数["好友页面_浇水次数上限"]) Or 餐厅萌物语全局参数["好友页面_是否施肥花朵"]) And 上楼按钮 And 上楼按钮(0) = 0 Then 
             zm.Tap 上楼按钮(1) + 61, 上楼按钮(2) + 50, "@好友页面_上楼按钮"
-            Delay 5000
+            Delay 2000
             餐厅萌物语_工具_遍历好友页面("餐厅萌物语_工具_收获好友楼上资源", {"完成": False, "浇水": 0, "施肥": 0})
         End If
         
@@ -1263,12 +1284,14 @@ Function 餐厅萌物语_工具_收获好友楼下资源(收获资源状况)
         收获资源状况["爱心"] = 收获资源状况["爱心"] + 1
         Delay 500
         zm.Tap 730, 92
+        Delay 500
     Wend
                 
     While 餐厅萌物语全局参数["好友页面_是否收获金币"] And 收获资源状况["灶台"] < 3 And zm.FindPic(餐厅萌物语配置["好友页面_灶台按钮"], 126, 180, 940, 1750, "中心", 0.8, 2000, "+37,+31", True, "@好友页面_灶台按钮")
         收获资源状况["灶台"] = 收获资源状况["灶台"] + 1
         Delay 500
         zm.Tap 730, 92
+        Delay 500
     Wend
     
     Dim 收获钻石状况 = Not(餐厅萌物语全局参数["好友页面_是否收获钻石"]) Or (餐厅萌物语全局参数["好友页面_是否收获钻石"] And 收获资源状况["钻石"] = 1)
