@@ -1,0 +1,9 @@
+src
+test
+scripts
+node_modules
+
+*.log
+tsconfig.json
+!template/tsconfig.json
+.vscode-upload.json

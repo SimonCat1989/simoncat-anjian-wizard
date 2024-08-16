@@ -1,0 +1,18 @@
+{
+    "APP_PACKAGE_NAME": "com.moutai.mall",
+    "PAGE_SPLASH": {
+        "activity_name": "com.moutai.mall.module.splash.SplashActivity"
+    },
+    "PAGE_LOGIN": {
+        "name": "Login Page",
+        "activity_name": "com.moutai.mall.module.login.LoginActivity",
+        "input_user_name_id": "etPhone",
+        "input_sms_code_id": "etVerifyCode",
+        "btn_fetch_sms_code_id": "btVerifyCode",
+        "btn_login_id": "btLogin",
+        "checkbox_grant_permission": "check_box"
+    },
+    "PAGE_MAIN": {
+        "activity_name": "com.moutai.mall.MainActivity"
+    }
+}
