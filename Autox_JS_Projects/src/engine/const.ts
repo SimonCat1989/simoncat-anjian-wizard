@@ -6,7 +6,11 @@ export const DEFAULT_SLEEP_SEC_PRE_ACTION = 1000;
 export const DEFAULT_SLEEP_SEC_POST_ACTION = 1000;
 
 export const AutoxActionDefault = {
-    "CLICK": (ele?: AutoJs.UiObject) => (ele as AutoJs.UiObject).click()
+    "CLICK": (ele?: AutoJs.UiObject) => (ele as AutoJs.UiObject).click(),
+    "CLICK_DIRECTLY": (ele?: AutoJs.UiObject) => {
+        let area = (ele as AutoJs.UiObject).bounds();
+        return click(area.centerX(), area.centerY());
+    },
 }
 
 export const PredefinedAutoxActions = {

@@ -28,7 +28,7 @@ export class AutoxAutomatorEngine {
 
     printActions(): void {
         this.actions.forEach((action) => {
-            console.info("[INFO] ============================================================================");
+            console.info("[INFO] ==================================");
             console.info(`name: ${action.name}`);
             action.preconditions.forEach((pre) => {
                 console.info(`precondition: ${pre.waitForActivityDisappearance}, ${pre.waitForElementAppearance}, ${pre.waitForElementDisappearance}`);
@@ -60,121 +60,9 @@ export class AutoxAutomatorEngine {
             console.info(`[INFO] [Success] Launched Package '${this.packageName}'`);
             sleep(5000);
 
-            const actionTotalCount = this.actions.length;
-            let isInterrupted = false;
-            for (let actionIndex = 0; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
-                let currentAction = this.actions[actionIndex];
-                console.info("[INFO] ============================================================================");
-                console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Start] ${currentAction.name}`);
+            this._doInternal();
 
-                // Analyze sub-actions
-                if (currentAction.actions.length > 0) {
-                    const subActionTotal = currentAction.actions.length;
-                    const subPreconditionTotal = currentAction.preconditions.length;
-                    const subTargetTotal = currentAction.targets.length;
-                    let subActionIndex = 0;
-                    let isSkippedSubAction = false;
-
-                    while (!isSkippedSubAction && subActionIndex < subActionTotal) {
-                        let currentSubAction = currentAction.actions[subActionIndex];
-                        
-                        // Pause before taking sub-action
-                        sleep(currentSubAction.sleepSecPreAction);
-
-                        if (subActionIndex < subPreconditionTotal) {
-                            // Detected precondition for current sub-action
-                            let currentSubPrecondition = currentAction.preconditions[subActionIndex];
-                            console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Start] ${currentSubPrecondition.preconditionDesc}.`);
-                            if (!this._waitForPreconditions(currentSubPrecondition)) {
-                                if (currentSubPrecondition.skipIfTimeoutForWaiting) {
-                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Timeout] ${currentSubPrecondition.preconditionDesc}.`);
-                                    isSkippedSubAction = true;
-                                } else {
-                                    console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Failed] ${currentSubPrecondition.preconditionDesc}, exit.`);
-                                    isInterrupted = true;
-                                    break;
-                                }
-                            } else {
-                                console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Success] ${currentSubPrecondition.preconditionDesc}.`);
-                            }
-                        } else {
-                            console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Skip] No pre-conditions.`);
-                        }
-
-                        try {
-                            if (!isSkippedSubAction) {
-                                if (subActionIndex < subTargetTotal) {
-                                    // Detected targets for current sub-action
-                                    let currentSubTarget = currentAction.targets[subActionIndex];
-                                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Start] ${currentSubTarget.targetDesc}`);
-
-                                    let baseObject: AutoJs.UiObject | null | undefined = currentSubTarget.target.findOne(currentSubTarget.maxWaitForFindingTargetSec);
-                                    baseObject = (baseObject && currentSubTarget.relativePathFunc) ? currentSubTarget.relativePathFunc(baseObject) : baseObject;
-                                    if (baseObject) {
-                                        console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Success] ${currentSubTarget.targetDesc}`);
-
-                                        console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Start] ${currentSubAction.actionDesc}`);
-                                        if (this._recursivlyDoAction(baseObject, currentSubTarget.targetDesc, currentSubAction.action, currentSubAction.actionDesc)) {
-                                            console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Success] ${currentSubAction.actionDesc}`);
-                                        } else if (currentSubAction.skipIfActionFailed) {
-                                            console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}.`);
-                                        } else {
-                                            console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Failed] ${currentSubAction.actionDesc}, exit.`);
-                                            isInterrupted = true;
-                                            break;
-                                        }
-                                    } else if (currentSubTarget.skipIfTargetNonExistent) {
-                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Timeout] ${currentSubTarget.targetDesc}.`);
-                                    } else {
-                                        console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Failed] ${currentSubTarget.targetDesc}, exit.`);
-                                        isInterrupted = true;
-                                        break;
-                                    }
-                                } else {
-                                    // No targets for current sub-action, directly apply action
-                                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Skip] No definitions, directly apply job.`);
-
-                                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Start] ${currentSubAction.actionDesc}.`);
-                                    if (currentSubAction.action()) {
-                                        console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Success] ${currentSubAction.actionDesc}.`);
-                                    } else if (currentSubAction.skipIfActionFailed) {
-                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}.`);
-                                    } else {
-                                        console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Failed] ${currentSubAction.actionDesc}, exit.`);
-                                        isInterrupted = true;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Skip] ${currentSubAction.actionDesc}, due to timeout in Pre-Condition.`);
-                            }
-                        } catch (e) {
-                            console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [ERROR] ${currentSubAction.actionDesc}, with Error: ${e}`);
-                            isInterrupted = true;
-                            break;
-                        }
-
-                        // Pause after taking sub-action
-                        sleep(currentSubAction.sleepSecPostAction);
-
-                        // Reset the index if repetitive is true
-                        subActionIndex++;
-                        if (currentAction.repetitive && subActionIndex === subActionTotal && subPreconditionTotal > 0 && this._waitForPreconditions(currentAction.preconditions[0])) {
-                            subActionIndex = 0;
-                        }
-                    }
-                } else {
-                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Skip] No sub-actions in "${currentAction.name}".`);
-                }
-
-                if (isInterrupted) {
-                    console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Failed] ${currentAction.name}, exit.`);
-                } else {
-                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Success] ${currentAction.name}`);
-                }
-            }
-
-            console.info("[INFO] ============================================================================");
+            console.info("[INFO] ==================================");
             this._kill();
             console.info(`[INFO] [Success] Killed Package '${this.packageName}'. Programe is end.`);
             
@@ -182,6 +70,128 @@ export class AutoxAutomatorEngine {
             console.info(`[ERROR] [Failed] Unable to Launch Package '${this.packageName}'`);
         }
         exit();
+    }
+
+    test(): void {
+        this._doInternal();
+    }
+
+    private _doInternal(): void {
+        const actionTotalCount = this.actions.length;
+        let isInterrupted = false;
+        for (let actionIndex = 0; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
+            let currentAction = this.actions[actionIndex];
+            console.info("[INFO] ==================================");
+            console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Start] ${currentAction.name}`);
+
+            // Analyze sub-actions
+            if (currentAction.actions.length > 0) {
+                const subActionTotal = currentAction.actions.length;
+                const subPreconditionTotal = currentAction.preconditions.length;
+                const subTargetTotal = currentAction.targets.length;
+                let subActionIndex = 0;
+                let isSkippedSubAction = false;
+
+                while (!isSkippedSubAction && subActionIndex < subActionTotal) {
+                    let currentSubAction = currentAction.actions[subActionIndex];
+                    
+                    // Pause before taking sub-action
+                    sleep(currentSubAction.sleepSecPreAction);
+
+                    if (subActionIndex < subPreconditionTotal) {
+                        // Detected precondition for current sub-action
+                        let currentSubPrecondition = currentAction.preconditions[subActionIndex];
+                        console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Start] ${currentSubPrecondition.preconditionDesc}.`);
+                        if (!this._waitForPreconditions(currentSubPrecondition)) {
+                            if (currentSubPrecondition.skipIfTimeoutForWaiting) {
+                                console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Timeout] ${currentSubPrecondition.preconditionDesc}.`);
+                                isSkippedSubAction = true;
+                            } else {
+                                console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Failed] ${currentSubPrecondition.preconditionDesc}, exit.`);
+                                isInterrupted = true;
+                                break;
+                            }
+                        } else {
+                            console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Success] ${currentSubPrecondition.preconditionDesc}.`);
+                        }
+                    } else {
+                        console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Skip] No pre-conditions.`);
+                    }
+
+                    try {
+                        if (!isSkippedSubAction) {
+                            if (subActionIndex < subTargetTotal) {
+                                // Detected targets for current sub-action
+                                let currentSubTarget = currentAction.targets[subActionIndex];
+                                console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Start] ${currentSubTarget.targetDesc}`);
+
+                                let baseObject: AutoJs.UiObject | null | undefined = currentSubTarget.target.findOne(currentSubTarget.maxWaitForFindingTargetSec);
+                                baseObject = (baseObject && currentSubTarget.relativePathFunc) ? currentSubTarget.relativePathFunc(baseObject) : baseObject;
+                                if (baseObject) {
+                                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Success] ${currentSubTarget.targetDesc}`);
+
+                                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Start] ${currentSubAction.actionDesc}`);
+                                    if (this._recursivlyDoAction(baseObject, currentSubTarget.targetDesc, currentSubAction.action, currentSubAction.actionDesc)) {
+                                        console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Success] ${currentSubAction.actionDesc}`);
+                                    } else if (currentSubAction.skipIfActionFailed) {
+                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}.`);
+                                        isSkippedSubAction = true;
+                                    } else {
+                                        console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Failed] ${currentSubAction.actionDesc}, exit.`);
+                                        isInterrupted = true;
+                                        break;
+                                    }
+                                } else if (currentSubTarget.skipIfTargetNonExistent) {
+                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Timeout] ${currentSubTarget.targetDesc}.`);
+                                    isSkippedSubAction = true;
+                                } else {
+                                    console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Failed] ${currentSubTarget.targetDesc}, exit.`);
+                                    isInterrupted = true;
+                                    break;
+                                }
+                            } else {
+                                // No targets for current sub-action, directly apply action
+                                console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Skip] No definitions, directly apply job.`);
+
+                                console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Start] ${currentSubAction.actionDesc}.`);
+                                if (currentSubAction.action()) {
+                                    console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Success] ${currentSubAction.actionDesc}.`);
+                                } else if (currentSubAction.skipIfActionFailed) {
+                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}.`);
+                                } else {
+                                    console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Failed] ${currentSubAction.actionDesc}, exit.`);
+                                    isInterrupted = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Skip] ${currentSubAction.actionDesc}, due to timeout in Pre-Condition.`);
+                        }
+                    } catch (e) {
+                        console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [ERROR] ${currentSubAction.actionDesc}, with Error: ${e}`);
+                        isInterrupted = true;
+                        break;
+                    }
+
+                    // Pause after taking sub-action
+                    sleep(currentSubAction.sleepSecPostAction);
+
+                    // Reset the index if repetitive is true
+                    subActionIndex++;
+                    if (currentAction.repetitive && subActionIndex === subActionTotal && subPreconditionTotal > 0 && this._waitForPreconditions(currentAction.preconditions[0])) {
+                        subActionIndex = 0;
+                    }
+                }
+            } else {
+                console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Skip] No sub-actions in "${currentAction.name}".`);
+            }
+
+            if (isInterrupted) {
+                console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Failed] ${currentAction.name}, exit.`);
+            } else {
+                console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Success] ${currentAction.name}`);
+            }
+        }
     }
 
     private _waitForPreconditions(precondition: AutoxActionPreconditionDto) {
@@ -298,9 +308,16 @@ export class AutoxAutomatorEngine {
 
     private _init() {
         auto();
-        //console.show();
         device.wakeUpIfNeeded();
+        // Wait for device up completely
+        sleep(10000);
+
         setScreenMetrics(1080, 2040);
+        console.show();
+        sleep(200); //等待一会，才能设置尺寸成功
+        console.setPosition(0, 0);
+        console.setSize(device.width, device.height / 3);
+        console.log(""); //刷新显示，解决尺寸无法无法刷新的问题
     }
 
     private _kill() {
@@ -317,6 +334,7 @@ export class AutoxAutomatorEngine {
         text("强行停止").findOne().click();
         // Back to home page
         sleep(500);
-        home();
+        back();
+        console.hide();
     }
 }

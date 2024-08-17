@@ -110,11 +110,11 @@ new AutoxAutomatorEngine("tv.danmaku.bili")
         name: "跳转至[大积分商城页面]",
         preconditions: [
             { waitForElementAppearance: idMatches("bigPointModule"), preconditionDesc: "等待出现：[超链接] 查看更多" },
-            { waitForElementAppearance: textMatches("(做任务得大积分|签到得大积分)"), preconditionDesc: "等待出现：[按钮] 做任务得大积分 / 签到得大积分" }
+            { waitForElementAppearance: textMatches("(做任务得大积分|签到赚大积分.*)"), preconditionDesc: "等待出现：[按钮] 做任务得大积分 / 签到賺大积分" }
         ],
         targets: [
             { target: idMatches("bigPointModule"), targetDesc: "[超链接] 查看更多", relativePathFunc: (obj) => obj.findOne(text("查看更多")) },
-            { target: textMatches("(做任务得大积分|签到得大积分)"), targetDesc: "[按钮] 做任务得大积分 / 签到得大积分" }
+            { target: textMatches("(做任务得大积分|签到赚大积分.*)"), targetDesc: "[按钮] 做任务得大积分 / 签到賺大积分" }
         ],
         actions: [
             { action: AutoxActionDefault.CLICK, actionDesc: "点击：[超链接] 查看更多", sleepSecPostAction: 10000 },

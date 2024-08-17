@@ -1,1 +1,507 @@
-(()=>{"use strict";var e={96:function(e,t,i){var n=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0});var o=n(i(749)),c=i(123),r=i(333);r.GlobalUtils.initApp(o.default.APP_PACKAGE_NAME),r.GlobalUtils.waitForElementAppear(text("我的"))&&(console.info("[INFO] [Current Page] 首页"),c.SINGLETON_WRAPPER.clickByText("我的"),r.GlobalUtils.waitForElementAppear(text("签到领豆"))&&(console.info("[INFO] [Current Page] 签到领豆"),c.SINGLETON_WRAPPER.clickByText("我的")))},123:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.SINGLETON_WRAPPER=t.AutoxSelectorWrapper=void 0;var i=function(){function e(e){void 0===e&&(e=!0),this.isContinue=e}return e.prototype.pause=function(t){return this.isContinue&&sleep(t||e.DEFAULT_WAIT_SEC_BEFORE_APPLY),this},e.prototype.clickTopMiddleArea=function(t,i){return this.isContinue&&(sleep(t||e.DEFAULT_WAIT_SEC_BEFORE_APPLY),this.isContinue=click(device.width/2,100),sleep(i||e.DEFAULT_WAIT_SEC_BEFORE_NEXT)),this},e.prototype.clickById=function(e,t,i,n,o){return this.execute(id(e),"[id] ".concat(e),(function(e){return e.click()}),"[action] click",t,i,n,o)},e.prototype.clickByText=function(e,t,i,n,o){return this.execute(text(e),"[Text] ".concat(e),(function(e){return e.click()}),"[action] click",t,i,n,o)},e.prototype.setText=function(e,t,i,n,o,c){return this.execute(id(e),"[id] ".concat(e),(function(e){return e.setText(t)}),"[action] setText ".concat(t),i,n,o,c)},e.prototype.clickDirectly=function(t,i,n,o,c,r){if(this.isContinue){var a=t.findOne(c||e.DEFAULT_MAX_WAIT_SEC_TIMEOUT);this.recursivlyApplyAction(a&&n?n(a):a,i,(function(e){return e.click()}),"[action] click",o),sleep(r||e.DEFAULT_WAIT_SEC_BEFORE_NEXT)}return this},e.prototype.execute=function(t,i,n,o,c,r,a,l){return this.isContinue&&(this.recursivlyApplyAction((c?c(t):t).findOne(a||e.DEFAULT_MAX_WAIT_SEC_TIMEOUT),i,n,o,r),sleep(l||e.DEFAULT_WAIT_SEC_BEFORE_NEXT)),this},e.prototype.recursivlyApplyAction=function(t,i,n,o,c){if(t)if(n(t))console.info('[INFO] Detected "'.concat(i,'", and applied "').concat(o,'".'));else{console.info('[WARN] Detected "'.concat(i,'", but failed to apply "').concat(o,'".'));for(var r=0,a=!1;r<e.MAX_ANCESTOR_COUNT;){r+=1;var l=t.parent();if(!l){console.info("[ERROR] NO Detected parent of LV-".concat(r,' "').concat(i,'", and failed to apply "').concat(o,'".'));break}if(n(l)){console.info("[INFO] Detected parent LV-".concat(r,' of "').concat(i,'", and applied "').concat(o,'".')),a=!0;break}console.info("[ERROR] Detected parent LV-".concat(r,' of "').concat(i,'", but failed to apply "').concat(o,'".')),t=l}this.isContinue=a}else c?console.info('[INFO] Skipped "'.concat(i,'" due to non-existent.')):(console.error('[ERROR] Unable to detect "'.concat(i,'", skipped all following steps.')),this.isContinue=!1)},e.MAX_ANCESTOR_COUNT=3,e.DEFAULT_MAX_WAIT_SEC_TIMEOUT=5e3,e.DEFAULT_WAIT_SEC_BEFORE_NEXT=1e3,e.DEFAULT_WAIT_SEC_BEFORE_APPLY=5e3,e}();t.AutoxSelectorWrapper=i,t.SINGLETON_WRAPPER=new i},333:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.GlobalUtils=void 0;var i=function(){function e(){}return e.initApp=function(e){auto(),device.wakeUpIfNeeded(),setScreenMetrics(1080,2040),app.launch(e),sleep(5e3)},e.killApp=function(e){app.openAppSetting(e),text(app.getAppName(e)).waitFor(),text("强行停止").findOne().click(),sleep(500),text("强行停止").findOne().click(),sleep(500),home()},e.waitForActivityDisappear=function(e,t,i){void 0===t&&(t=3e5),void 0===i&&(i=1e3);for(var n=Date.now();currentActivity()==e;){if(t>0&&Date.now()-n>t)return!1;sleep(i)}return!0},e.waitForElementAppear=function(e,t,i){void 0===t&&(t=6e4),void 0===i&&(i=1e3);for(var n=Date.now();!e.exists();){if(t>0&&Date.now()-n>t)return!1;sleep(i)}return!0},e.waitForElementDisappear=function(e,t,i){void 0===t&&(t=3e5),void 0===i&&(i=1e3);for(var n=Date.now();e.exists();){if(t>0&&Date.now()-n>t)return!1;sleep(i)}return!0},e}();t.GlobalUtils=i},749:e=>{e.exports=JSON.parse('{"APP_PACKAGE_NAME":"com.jingdong.app.mall","PAGE_SPLASH":{"activity_name":"com.moutai.mall.module.splash.SplashActivity"},"PAGE_LOGIN":{"name":"Login Page","activity_name":"com.moutai.mall.module.login.LoginActivity","input_user_name_id":"etPhone","input_sms_code_id":"etVerifyCode","btn_fetch_sms_code_id":"btVerifyCode","btn_login_id":"btLogin","checkbox_grant_permission":"check_box"},"PAGE_MAIN":{"activity_name":"com.ximalaya.ting.android.host.activity.MainActivity"}}')}},t={};!function i(n){var o=t[n];if(void 0!==o)return o.exports;var c=t[n]={exports:{}};return e[n].call(c.exports,c,c.exports,i),c.exports}(96)})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 24:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AutoxAutomatorEngine = void 0;
+var const_1 = __webpack_require__(456);
+var AutoxAutomatorEngine = /** @class */ (function () {
+    function AutoxAutomatorEngine(
+    /**
+     * Create automator engine for each APP or package
+     */
+    packageName, 
+    /**
+     * All pre-defined action list
+     * @default []
+     */
+    actions) {
+        if (actions === void 0) { actions = []; }
+        this.packageName = packageName;
+        this.actions = actions;
+    }
+    AutoxAutomatorEngine.prototype.addAction = function (action) {
+        this.actions.push(this.beautify(action));
+        return this;
+    };
+    AutoxAutomatorEngine.prototype.printActions = function () {
+        this.actions.forEach(function (action) {
+            console.info("[INFO] ==================================");
+            console.info("name: ".concat(action.name));
+            action.preconditions.forEach(function (pre) {
+                console.info("precondition: ".concat(pre.waitForActivityDisappearance, ", ").concat(pre.waitForElementAppearance, ", ").concat(pre.waitForElementDisappearance));
+                console.info("preconditionDesc: ".concat(pre.preconditionDesc));
+                console.info("timeoutForWaitingSec: ".concat(pre.timeoutForWaitingSec));
+                console.info("skipIfTimeoutForWaiting: ".concat(pre.skipIfTimeoutForWaiting));
+            });
+            action.targets.forEach(function (tar) {
+                console.info("target: ".concat(tar.target));
+                console.info("targetDesc: ".concat(tar.targetDesc));
+                console.info("relativePathFunc: ".concat(tar.relativePathFunc));
+                console.info("skipIfTargetNonExistent: ".concat(tar.skipIfTargetNonExistent));
+                console.info("maxWaitForFindingTargetSec: ".concat(tar.maxWaitForFindingTargetSec));
+            });
+            action.actions.forEach(function (act) {
+                console.info("action: ".concat(act.action));
+                console.info("actionDesc: ".concat(act.actionDesc));
+                console.info("skipIfActionFailed: ".concat(act.skipIfActionFailed));
+                console.info("sleepSecPreAction: ".concat(act.sleepSecPreAction));
+                console.info("sleepSecPostAction: ".concat(act.sleepSecPostAction));
+            });
+            console.info("repetitive: ".concat(action.repetitive));
+        });
+    };
+    AutoxAutomatorEngine.prototype.launch = function () {
+        this._init();
+        if (app.launch(this.packageName)) {
+            console.info("[INFO] [Success] Launched Package '".concat(this.packageName, "'"));
+            sleep(5000);
+            this._doInternal();
+            console.info("[INFO] ==================================");
+            this._kill();
+            console.info("[INFO] [Success] Killed Package '".concat(this.packageName, "'. Programe is end."));
+        }
+        else {
+            console.info("[ERROR] [Failed] Unable to Launch Package '".concat(this.packageName, "'"));
+        }
+        exit();
+    };
+    AutoxAutomatorEngine.prototype.test = function () {
+        this._doInternal();
+    };
+    AutoxAutomatorEngine.prototype._doInternal = function () {
+        var actionTotalCount = this.actions.length;
+        var isInterrupted = false;
+        for (var actionIndex = 0; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
+            var currentAction = this.actions[actionIndex];
+            console.info("[INFO] ==================================");
+            console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Start] ").concat(currentAction.name));
+            // Analyze sub-actions
+            if (currentAction.actions.length > 0) {
+                var subActionTotal = currentAction.actions.length;
+                var subPreconditionTotal = currentAction.preconditions.length;
+                var subTargetTotal = currentAction.targets.length;
+                var subActionIndex = 0;
+                var isSkippedSubAction = false;
+                while (!isSkippedSubAction && subActionIndex < subActionTotal) {
+                    var currentSubAction = currentAction.actions[subActionIndex];
+                    // Pause before taking sub-action
+                    sleep(currentSubAction.sleepSecPreAction);
+                    if (subActionIndex < subPreconditionTotal) {
+                        // Detected precondition for current sub-action
+                        var currentSubPrecondition = currentAction.preconditions[subActionIndex];
+                        console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Pre-Condition] [Start] ").concat(currentSubPrecondition.preconditionDesc, "."));
+                        if (!this._waitForPreconditions(currentSubPrecondition)) {
+                            if (currentSubPrecondition.skipIfTimeoutForWaiting) {
+                                console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Pre-Condition] [Timeout] ").concat(currentSubPrecondition.preconditionDesc, "."));
+                                isSkippedSubAction = true;
+                            }
+                            else {
+                                console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Pre-Condition] [Failed] ").concat(currentSubPrecondition.preconditionDesc, ", exit."));
+                                isInterrupted = true;
+                                break;
+                            }
+                        }
+                        else {
+                            console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Pre-Condition] [Success] ").concat(currentSubPrecondition.preconditionDesc, "."));
+                        }
+                    }
+                    else {
+                        console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Pre-Condition] [Skip] No pre-conditions."));
+                    }
+                    try {
+                        if (!isSkippedSubAction) {
+                            if (subActionIndex < subTargetTotal) {
+                                // Detected targets for current sub-action
+                                var currentSubTarget = currentAction.targets[subActionIndex];
+                                console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [UI-Object] [Start] ").concat(currentSubTarget.targetDesc));
+                                var baseObject = currentSubTarget.target.findOne(currentSubTarget.maxWaitForFindingTargetSec);
+                                baseObject = (baseObject && currentSubTarget.relativePathFunc) ? currentSubTarget.relativePathFunc(baseObject) : baseObject;
+                                if (baseObject) {
+                                    console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [UI-Object] [Success] ").concat(currentSubTarget.targetDesc));
+                                    console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Start] ").concat(currentSubAction.actionDesc));
+                                    if (this._recursivlyDoAction(baseObject, currentSubTarget.targetDesc, currentSubAction.action, currentSubAction.actionDesc)) {
+                                        console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Success] ").concat(currentSubAction.actionDesc));
+                                    }
+                                    else if (currentSubAction.skipIfActionFailed) {
+                                        console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Skip] ").concat(currentSubAction.actionDesc, "."));
+                                    }
+                                    else {
+                                        console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Failed] ").concat(currentSubAction.actionDesc, ", exit."));
+                                        isInterrupted = true;
+                                        break;
+                                    }
+                                }
+                                else if (currentSubTarget.skipIfTargetNonExistent) {
+                                    console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [UI-Object] [Timeout] ").concat(currentSubTarget.targetDesc, "."));
+                                    isSkippedSubAction = true;
+                                }
+                                else {
+                                    console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [UI-Object] [Failed] ").concat(currentSubTarget.targetDesc, ", exit."));
+                                    isInterrupted = true;
+                                    break;
+                                }
+                            }
+                            else {
+                                // No targets for current sub-action, directly apply action
+                                console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [UI-Object] [Skip] No definitions, directly apply job."));
+                                console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Start] ").concat(currentSubAction.actionDesc, "."));
+                                if (currentSubAction.action()) {
+                                    console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Success] ").concat(currentSubAction.actionDesc, "."));
+                                }
+                                else if (currentSubAction.skipIfActionFailed) {
+                                    console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Skip] ").concat(currentSubAction.actionDesc, "."));
+                                }
+                                else {
+                                    console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Failed] ").concat(currentSubAction.actionDesc, ", exit."));
+                                    isInterrupted = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Skip] ").concat(currentSubAction.actionDesc, ", due to timeout in Pre-Condition."));
+                        }
+                    }
+                    catch (e) {
+                        console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [ERROR] ").concat(currentSubAction.actionDesc, ", with Error: ").concat(e));
+                        isInterrupted = true;
+                        break;
+                    }
+                    // Pause after taking sub-action
+                    sleep(currentSubAction.sleepSecPostAction);
+                    // Reset the index if repetitive is true
+                    subActionIndex++;
+                    if (currentAction.repetitive && subActionIndex === subActionTotal && subPreconditionTotal > 0 && this._waitForPreconditions(currentAction.preconditions[0])) {
+                        subActionIndex = 0;
+                    }
+                }
+            }
+            else {
+                console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Skip] No sub-actions in \"").concat(currentAction.name, "\"."));
+            }
+            if (isInterrupted) {
+                console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Failed] ").concat(currentAction.name, ", exit."));
+            }
+            else {
+                console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Success] ").concat(currentAction.name));
+            }
+        }
+    };
+    AutoxAutomatorEngine.prototype._waitForPreconditions = function (precondition) {
+        if (precondition.waitForActivityDisappearance) {
+            return this._waitForActivityDisappear(precondition.waitForActivityDisappearance, precondition.timeoutForWaitingSec);
+        }
+        else if (precondition.waitForElementAppearance) {
+            return this._waitForElementAppear(precondition.waitForElementAppearance, precondition.timeoutForWaitingSec);
+        }
+        else if (precondition.waitForElementDisappearance) {
+            return this._waitForElementDisappear(precondition.waitForElementDisappearance, precondition.timeoutForWaitingSec);
+        }
+        return true;
+    };
+    AutoxAutomatorEngine.prototype._waitForActivityDisappear = function (activity, timeout, period) {
+        if (timeout === void 0) { timeout = 300000; }
+        if (activity) {
+            var start = Date.now();
+            while (currentActivity() == activity) {
+                if (timeout > 0 && Date.now() - start > timeout) {
+                    return false;
+                }
+                sleep(period ? period : const_1.DEFAULT_WAIT_FOR_PRECONDITIONS_SEC_INTERVAL);
+            }
+        }
+        return true;
+    };
+    AutoxAutomatorEngine.prototype._waitForElementAppear = function (element, timeout, period) {
+        if (timeout === void 0) { timeout = 60000; }
+        if (element) {
+            var start = Date.now();
+            while (!element.exists()) {
+                if (timeout > 0 && Date.now() - start > timeout) {
+                    return false;
+                }
+                sleep(period ? period : const_1.DEFAULT_WAIT_FOR_PRECONDITIONS_SEC_INTERVAL);
+            }
+        }
+        return true;
+    };
+    AutoxAutomatorEngine.prototype._waitForElementDisappear = function (element, timeout, period) {
+        if (timeout === void 0) { timeout = 300000; }
+        if (element) {
+            var start = Date.now();
+            while (element.exists()) {
+                if (timeout > 0 && Date.now() - start > timeout) {
+                    return false;
+                }
+                sleep(period ? period : const_1.DEFAULT_WAIT_FOR_PRECONDITIONS_SEC_INTERVAL);
+            }
+        }
+        return true;
+    };
+    AutoxAutomatorEngine.prototype._recursivlyDoAction = function (target, selectorDesc, actionFunc, actionDesc) {
+        if (actionFunc(target)) {
+            console.info("[INFO] Found \"".concat(selectorDesc, "\", and applied \"").concat(actionDesc, "\"."));
+            return true;
+        }
+        else {
+            console.warn("[WARN] Found \"".concat(selectorDesc, "\", but failed to apply \"").concat(actionDesc, "\". Start to retry with ancestors for ").concat(const_1.MAX_ANCESTOR_COUNT, " times."));
+            var currentLevel = 0;
+            while (currentLevel < const_1.MAX_ANCESTOR_COUNT) {
+                currentLevel += 1;
+                var parent_1 = target.parent();
+                if (parent_1) {
+                    if (actionFunc(parent_1)) {
+                        console.info("[INFO] Found [LV-".concat(currentLevel, "] ancestor of \"").concat(selectorDesc, "\", and applied \"").concat(actionDesc, "\"."));
+                        return true;
+                    }
+                    else {
+                        console.warn("[WARN] Found [LV-".concat(currentLevel, "] ancestor of \"").concat(selectorDesc, "\", but failed to apply \"").concat(actionDesc, "\"."));
+                        target = parent_1;
+                    }
+                }
+                else {
+                    console.error("[ERROR] Can NOT find [LV-".concat(currentLevel, "] ancestor of \"").concat(selectorDesc, "\", so failed to apply \"").concat(actionDesc, "\"."));
+                    return false;
+                }
+            }
+            console.error("[ERROR] Retried with ancestors of \"".concat(selectorDesc, "\" for ").concat(const_1.MAX_ANCESTOR_COUNT, " times, so failed to apply \"").concat(actionDesc, "\"."));
+            return false;
+        }
+    };
+    AutoxAutomatorEngine.prototype.beautify = function (action) {
+        action.preconditions = action.preconditions ? action.preconditions : [];
+        action.targets = action.targets ? action.targets : [];
+        action.actions = action.actions ? action.actions : [];
+        action.repetitive = action.repetitive ? action.repetitive : false;
+        action.preconditions.forEach(function (pre) {
+            pre.timeoutForWaitingSec = pre.timeoutForWaitingSec === undefined ? const_1.DEFAULT_MAX_WAIT_FOR_PRECONDITIONS_SEC : pre.timeoutForWaitingSec;
+            pre.skipIfTimeoutForWaiting = pre.skipIfTimeoutForWaiting === undefined ? false : pre.skipIfTimeoutForWaiting;
+        });
+        action.targets.forEach(function (tar) {
+            tar.skipIfTargetNonExistent = tar.skipIfTargetNonExistent === undefined ? false : tar.skipIfTargetNonExistent;
+            tar.maxWaitForFindingTargetSec = tar.maxWaitForFindingTargetSec === undefined ? const_1.DEFAULT_MAX_WAIT_FOR_FINDING_SEC : tar.maxWaitForFindingTargetSec;
+        });
+        action.actions.forEach(function (act) {
+            act.skipIfActionFailed = act.skipIfActionFailed === undefined ? false : act.skipIfActionFailed;
+            act.sleepSecPreAction = act.sleepSecPreAction === undefined ? const_1.DEFAULT_SLEEP_SEC_PRE_ACTION : act.sleepSecPreAction;
+            act.sleepSecPostAction = act.sleepSecPostAction === undefined ? const_1.DEFAULT_SLEEP_SEC_POST_ACTION : act.sleepSecPostAction;
+        });
+        if (action.repetitive && (action.preconditions.length === 0 || action.preconditions.length >= 1
+            && action.preconditions[0].waitForActivityDisappearance === undefined
+            && action.preconditions[0].waitForElementAppearance === undefined
+            && action.preconditions[0].waitForElementDisappearance === undefined)) {
+            action.repetitive = false;
+        }
+        return action;
+    };
+    AutoxAutomatorEngine.prototype._init = function () {
+        auto();
+        device.wakeUpIfNeeded();
+        // Wait for device up completely
+        sleep(10000);
+        setScreenMetrics(1080, 2040);
+        console.show();
+        sleep(200); //等待一会，才能设置尺寸成功
+        console.setPosition(0, 0);
+        console.setSize(device.width, device.height / 3);
+        console.log(""); //刷新显示，解决尺寸无法无法刷新的问题
+    };
+    AutoxAutomatorEngine.prototype._kill = function () {
+        // Open the APP setting page
+        app.openAppSetting(this.packageName);
+        // Wait for setting page be ready
+        text(app.getAppName(this.packageName)).waitFor();
+        // Click the button to terminate app
+        // INVOKER.click(() => text("强行停止"), true, 2000, 2000);
+        // INVOKER.click(() => text("强行停止"));
+        text("强行停止").findOne().click();
+        // Confirm the termination in dialog
+        sleep(500);
+        text("强行停止").findOne().click();
+        // Back to home page
+        sleep(500);
+        back();
+        console.hide();
+    };
+    return AutoxAutomatorEngine;
+}());
+exports.AutoxAutomatorEngine = AutoxAutomatorEngine;
+
+
+/***/ }),
+
+/***/ 456:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PredefinedAutoxActions = exports.AutoxActionDefault = exports.DEFAULT_SLEEP_SEC_POST_ACTION = exports.DEFAULT_SLEEP_SEC_PRE_ACTION = exports.DEFAULT_WAIT_FOR_PRECONDITIONS_SEC_INTERVAL = exports.DEFAULT_MAX_WAIT_FOR_PRECONDITIONS_SEC = exports.DEFAULT_MAX_WAIT_FOR_FINDING_SEC = exports.MAX_ANCESTOR_COUNT = void 0;
+exports.MAX_ANCESTOR_COUNT = 3;
+exports.DEFAULT_MAX_WAIT_FOR_FINDING_SEC = 5000;
+exports.DEFAULT_MAX_WAIT_FOR_PRECONDITIONS_SEC = 30000;
+exports.DEFAULT_WAIT_FOR_PRECONDITIONS_SEC_INTERVAL = 1000;
+exports.DEFAULT_SLEEP_SEC_PRE_ACTION = 1000;
+exports.DEFAULT_SLEEP_SEC_POST_ACTION = 1000;
+exports.AutoxActionDefault = {
+    "CLICK": function (ele) { return ele.click(); },
+    "CLICK_DIRECTLY": function (ele) {
+        var area = ele.bounds();
+        return click(area.centerX(), area.centerY());
+    },
+};
+exports.PredefinedAutoxActions = {
+    "CLICK_TOP_MIDDLE": function () { return click(device.width / 2, 100); },
+    "BACK": function () { return back(); }
+};
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it uses a non-standard name for the exports (exports).
+(() => {
+var exports = __webpack_exports__;
+var __webpack_unused_export__;
+
+__webpack_unused_export__ = ({ value: true });
+var autox_automator_engine_1 = __webpack_require__(24);
+var const_1 = __webpack_require__(456);
+new autox_automator_engine_1.AutoxAutomatorEngine("com.jingdong.app.mall")
+    // .addAction({
+    //     name: "处理[青少年模式对话框]",
+    //     preconditions: [
+    //         { waitForElementAppearance: id("button").text("我知道了"), preconditionDesc: "等待出现：[按钮] 我知道了", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
+    //     ],
+    //     targets: [
+    //         { target: id("button").text("我知道了"), targetDesc: "[按钮] 我知道了" }
+    //     ],
+    //     actions: [
+    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我知道了" }
+    //     ]
+    // })
+    // .addAction({
+    //     name: "跳转至[我的页面]",
+    //     preconditions: [
+    //         { waitForElementAppearance: text("我的"), preconditionDesc: "等待出现：[按钮] 我的" }
+    //     ],
+    //     targets: [
+    //         { target: text("我的"), targetDesc: "[按钮] 我的", relativePathFunc: (ele) => ele.parent()?.children()[2] }
+    //     ],
+    //     actions: [
+    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我的" }
+    //     ]
+    // })
+    // .addAction({
+    //     name: "跳转至[我的京豆]",
+    //     preconditions: [
+    //         { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆" }
+    //     ],
+    //     targets: [
+    //         { target: text("签到领豆"), targetDesc: "[按钮] 签到领豆" }
+    //     ],
+    //     actions: [
+    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆" }
+    //     ]
+    // })
+    // .addAction({
+    //     name: "跳转至[签到领豆]",
+    //     preconditions: [
+    //         { waitForElementAppearance: textMatches("(去签到领京豆|已签到)"), preconditionDesc: "等待出现：[按钮] 去签到领京豆 / 已签到" }
+    //     ],
+    //     targets: [
+    //         { target: textMatches("(去签到领京豆|已签到)"), targetDesc: "[按钮] 去签到领京豆 / 已签到" }
+    //     ],
+    //     actions: [
+    //         { action: AutoxActionDefault.CLICK_DIRECTLY, actionDesc: "点击：[按钮] 去签到领京豆 / 已签到" }
+    //     ]
+    // })
+    // .addAction({
+    //     name: "处理[签到领豆]",
+    //     preconditions: [
+    //         { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
+    //     ],
+    //     targets: [
+    //         { target: text("签到领豆"), targetDesc: "[按钮] 签到领豆" }
+    //     ],
+    //     actions: [
+    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆" }
+    //     ]
+    // })
+    .addAction({
+    name: "跳转至弹窗[赚更多京豆]",
+    preconditions: [
+        { waitForElementAppearance: idMatches("homeSignButton"), preconditionDesc: "等待出现：[按钮] 赚更多京豆" }
+    ],
+    targets: [
+        { target: idMatches("homeSignButton"), targetDesc: "[按钮] 赚更多京豆" }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆" }
+    ]
+})
+    .addAction({
+    name: "处理[双签领豆]",
+    preconditions: [
+        { waitForElementAppearance: textStartsWith("双签领豆"), preconditionDesc: "等待出现：[文本] 双签领豆", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
+    ],
+    targets: [
+        { target: textStartsWith("双签领豆"), targetDesc: "[按钮] 去完成", relativePathFunc: function (ele) { var _a; return (_a = ele.parent()) === null || _a === void 0 ? void 0 : _a.findOne(text("去完成")); }, skipIfTargetNonExistent: true }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 去完成", sleepSecPostAction: 7000 },
+        { action: const_1.PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 3000 },
+        { action: const_1.PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 3000 }
+    ]
+})
+    .addAction({
+    name: "处理其他任务[领豆]",
+    preconditions: [
+        { waitForElementAppearance: text("去完成"), preconditionDesc: "等待出现：[按钮] 去完成", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
+    ],
+    targets: [
+        { target: text("去完成"), targetDesc: "[按钮] 去完成" }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 去完成", sleepSecPostAction: 7000 },
+        { action: const_1.PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 3000 }
+    ],
+    repetitive: true
+})
+    .test();
+
+})();
+
+/******/ })()
+;
