@@ -129,6 +129,7 @@ var AutoxAutomatorEngine = /** @class */ (function () {
                                     }
                                     else if (currentSubAction.skipIfActionFailed) {
                                         console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Skip] ").concat(currentSubAction.actionDesc, "."));
+                                        isSkippedSubAction = true;
                                     }
                                     else {
                                         console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Failed] ").concat(currentSubAction.actionDesc, ", exit."));

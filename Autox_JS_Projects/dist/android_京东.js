@@ -129,6 +129,7 @@ var AutoxAutomatorEngine = /** @class */ (function () {
                                     }
                                     else if (currentSubAction.skipIfActionFailed) {
                                         console.warn("[WARN] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Skip] ").concat(currentSubAction.actionDesc, "."));
+                                        isSkippedSubAction = true;
                                     }
                                     else {
                                         console.error("[ERROR] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Step ").concat(subActionIndex + 1, "/").concat(subActionTotal, "] [Job] [Failed] ").concat(currentSubAction.actionDesc, ", exit."));
@@ -399,66 +400,66 @@ __webpack_unused_export__ = ({ value: true });
 var autox_automator_engine_1 = __webpack_require__(24);
 var const_1 = __webpack_require__(456);
 new autox_automator_engine_1.AutoxAutomatorEngine("com.jingdong.app.mall")
-    // .addAction({
-    //     name: "处理[青少年模式对话框]",
-    //     preconditions: [
-    //         { waitForElementAppearance: id("button").text("我知道了"), preconditionDesc: "等待出现：[按钮] 我知道了", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
-    //     ],
-    //     targets: [
-    //         { target: id("button").text("我知道了"), targetDesc: "[按钮] 我知道了" }
-    //     ],
-    //     actions: [
-    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我知道了" }
-    //     ]
-    // })
-    // .addAction({
-    //     name: "跳转至[我的页面]",
-    //     preconditions: [
-    //         { waitForElementAppearance: text("我的"), preconditionDesc: "等待出现：[按钮] 我的" }
-    //     ],
-    //     targets: [
-    //         { target: text("我的"), targetDesc: "[按钮] 我的", relativePathFunc: (ele) => ele.parent()?.children()[2] }
-    //     ],
-    //     actions: [
-    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我的" }
-    //     ]
-    // })
-    // .addAction({
-    //     name: "跳转至[我的京豆]",
-    //     preconditions: [
-    //         { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆" }
-    //     ],
-    //     targets: [
-    //         { target: text("签到领豆"), targetDesc: "[按钮] 签到领豆" }
-    //     ],
-    //     actions: [
-    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆" }
-    //     ]
-    // })
-    // .addAction({
-    //     name: "跳转至[签到领豆]",
-    //     preconditions: [
-    //         { waitForElementAppearance: textMatches("(去签到领京豆|已签到)"), preconditionDesc: "等待出现：[按钮] 去签到领京豆 / 已签到" }
-    //     ],
-    //     targets: [
-    //         { target: textMatches("(去签到领京豆|已签到)"), targetDesc: "[按钮] 去签到领京豆 / 已签到" }
-    //     ],
-    //     actions: [
-    //         { action: AutoxActionDefault.CLICK_DIRECTLY, actionDesc: "点击：[按钮] 去签到领京豆 / 已签到" }
-    //     ]
-    // })
-    // .addAction({
-    //     name: "处理[签到领豆]",
-    //     preconditions: [
-    //         { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
-    //     ],
-    //     targets: [
-    //         { target: text("签到领豆"), targetDesc: "[按钮] 签到领豆" }
-    //     ],
-    //     actions: [
-    //         { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆" }
-    //     ]
-    // })
+    .addAction({
+    name: "处理[青少年模式对话框]",
+    preconditions: [
+        { waitForElementAppearance: id("button").text("我知道了"), preconditionDesc: "等待出现：[按钮] 我知道了", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
+    ],
+    targets: [
+        { target: id("button").text("我知道了"), targetDesc: "[按钮] 我知道了" }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我知道了" }
+    ]
+})
+    .addAction({
+    name: "跳转至[我的页面]",
+    preconditions: [
+        { waitForElementAppearance: text("我的"), preconditionDesc: "等待出现：[按钮] 我的" }
+    ],
+    targets: [
+        { target: text("我的"), targetDesc: "[按钮] 我的", relativePathFunc: function (ele) { var _a; return (_a = ele.parent()) === null || _a === void 0 ? void 0 : _a.children()[2]; } }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我的" }
+    ]
+})
+    .addAction({
+    name: "跳转至[我的京豆]",
+    preconditions: [
+        { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆" }
+    ],
+    targets: [
+        { target: text("签到领豆"), targetDesc: "[按钮] 签到领豆" }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆" }
+    ]
+})
+    .addAction({
+    name: "跳转至[签到领豆]",
+    preconditions: [
+        { waitForElementAppearance: textMatches("(去签到领京豆|已签到)"), preconditionDesc: "等待出现：[按钮] 去签到领京豆 / 已签到", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
+    ],
+    targets: [
+        { target: textMatches("(去签到领京豆|已签到)"), targetDesc: "[按钮] 去签到领京豆 / 已签到" }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK_DIRECTLY, actionDesc: "点击：[按钮] 去签到领京豆 / 已签到" }
+    ]
+})
+    .addAction({
+    name: "处理[签到领豆]",
+    preconditions: [
+        { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
+    ],
+    targets: [
+        { target: text("签到领豆"), targetDesc: "[按钮] 签到领豆" }
+    ],
+    actions: [
+        { action: const_1.AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 签到领豆", sleepSecPostAction: 5000 }
+    ]
+})
     .addAction({
     name: "跳转至弹窗[赚更多京豆]",
     preconditions: [
@@ -499,7 +500,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("com.jingdong.app.mall")
     ],
     repetitive: true
 })
-    .test();
+    .launch();
 
 })();
 
