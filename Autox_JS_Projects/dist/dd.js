@@ -1,1 +1,0 @@
-console.info(textMatches("签到赚大积分.*").findOne(2000).text());
