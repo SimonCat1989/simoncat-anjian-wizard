@@ -3,7 +3,7 @@ import { AutoxActionDefault, PredefinedAutoxActions } from '../../engine/const';
 
 new AutoxAutomatorEngine("com.jingdong.app.mall")
     .addAction({
-        name: "处理[青少年模式对话框]",
+        id: 1, name: "处理[青少年模式对话框]",
         preconditions: [
             { waitForElementAppearance: id("button").text("我知道了"), preconditionDesc: "等待出现：[按钮] 我知道了", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
         ],
@@ -15,7 +15,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "跳转至[我的页面]",
+        id: 2, name: "跳转至[我的页面]",
         preconditions: [
             { waitForElementAppearance: text("我的"), preconditionDesc: "等待出现：[按钮] 我的" }
         ],
@@ -27,7 +27,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "跳转至[我的京豆]",
+        id: 3, name: "跳转至[我的京豆]",
         preconditions: [
             { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆" }
         ],
@@ -39,7 +39,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "跳转至[签到领豆]",
+        id: 4, name: "跳转至[签到领豆]",
         preconditions: [
             { waitForElementAppearance: textMatches("(去签到领京豆|已签到)"), preconditionDesc: "等待出现：[按钮] 去签到领京豆 / 已签到", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
         ],
@@ -51,7 +51,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "处理[签到领豆]",
+        id: 5, name: "处理[签到领豆]",
         preconditions: [
             { waitForElementAppearance: text("签到领豆"), preconditionDesc: "等待出现：[按钮] 签到领豆", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
         ],
@@ -63,7 +63,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "跳转至弹窗[赚更多京豆]",
+        id: 6, name: "跳转至弹窗[赚更多京豆]",
         preconditions: [
             { waitForElementAppearance: idMatches("homeSignButton"), preconditionDesc: "等待出现：[按钮] 赚更多京豆" }
         ],
@@ -75,7 +75,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "处理[双签领豆]",
+        id: 7, name: "处理[双签领豆]",
         preconditions: [
             { waitForElementAppearance: textStartsWith("双签领豆"), preconditionDesc: "等待出现：[文本] 双签领豆", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
         ],
@@ -89,7 +89,7 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ]
     })
     .addAction({
-        name: "处理其他任务[领豆]",
+        id: 8, name: "处理其他任务[领豆]",
         preconditions: [
             { waitForElementAppearance: text("去完成"), preconditionDesc: "等待出现：[按钮] 去完成", skipIfTimeoutForWaiting: true, timeoutForWaitingSec: 5000 }
         ],
@@ -102,4 +102,4 @@ new AutoxAutomatorEngine("com.jingdong.app.mall")
         ],
         repetitive: true
     })
-    .launch();
+    .test();

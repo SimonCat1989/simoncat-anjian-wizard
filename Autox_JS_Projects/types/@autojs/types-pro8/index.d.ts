@@ -2347,6 +2347,9 @@ declare module '__console__' {
             **/
             setGlobalLogConfig(config: Object);
 
+            //// Missing Types ////
+            setCanInput(can: boolean);
+            // Missing Types End //
         }
 
         /**

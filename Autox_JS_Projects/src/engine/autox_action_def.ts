@@ -1,4 +1,5 @@
 export interface AutoxAction {
+    id: number;
     /**
       * Just a name of one particular action
       */

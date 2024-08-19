@@ -60,7 +60,7 @@ var AutoxAutomatorEngine = /** @class */ (function () {
         if (app.launch(this.packageName)) {
             console.info("[INFO] [Success] Launched Package '".concat(this.packageName, "'"));
             sleep(5000);
-            this._doInternal();
+            this._doInternal(0, this.actions.length);
             console.info("[INFO] ==================================");
             this._kill();
             console.info("[INFO] [Success] Killed Package '".concat(this.packageName, "'. Programe is end."));
@@ -71,12 +71,26 @@ var AutoxAutomatorEngine = /** @class */ (function () {
         exit();
     };
     AutoxAutomatorEngine.prototype.test = function () {
-        this._doInternal();
+        console.setCanInput(true);
+        while (true) {
+            var command = console.input("Input Action ID Range (e.g. '1,4') or quit: ");
+            if (command === 'quit') {
+                break;
+            }
+            else {
+                var actionIds = command.split(",");
+                if (actionIds.length !== 2) {
+                    console.error("[ERROR] Invalid input !");
+                }
+                else {
+                    this._doInternal(actionIds[0] - 1, actionIds[1]);
+                }
+            }
+        }
     };
-    AutoxAutomatorEngine.prototype._doInternal = function () {
-        var actionTotalCount = this.actions.length;
+    AutoxAutomatorEngine.prototype._doInternal = function (actionIndex, actionTotalCount) {
         var isInterrupted = false;
-        for (var actionIndex = 0; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
+        for (; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
             var currentAction = this.actions[actionIndex];
             console.info("[INFO] ==================================");
             console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Start] ").concat(currentAction.name));
@@ -401,7 +415,7 @@ var autox_automator_engine_1 = __webpack_require__(24);
 var const_1 = __webpack_require__(456);
 new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     .addAction({
-    name: "处理[青少年模式对话框]",
+    id: 1, name: "处理[青少年模式对话框]",
     preconditions: [
         { waitForElementAppearance: id("button").text("我知道了"), preconditionDesc: "等待出现：[按钮] 我知道了", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
     ],
@@ -413,7 +427,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "跳转至[我的页面]",
+    id: 2, name: "跳转至[我的页面]",
     preconditions: [
         { waitForElementAppearance: text("我的"), preconditionDesc: "等待出现：[按钮] 我的" }
     ],
@@ -425,7 +439,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "跳转至[会员中心]",
+    id: 3, name: "跳转至[会员中心]",
     preconditions: [
         { waitForElementAppearance: id("vip_info_layout_v2"), preconditionDesc: "等待出现：[超链接] 会员中心" }
     ],
@@ -437,7 +451,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "处理[限时优惠对话框]",
+    id: 4, name: "处理[限时优惠对话框]",
     preconditions: [
         { waitForElementAppearance: idMatches("canvasVip"), preconditionDesc: "等待出现：限时优惠对话框", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
     ],
@@ -447,7 +461,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "处理[专属等级加速包]",
+    id: 5, name: "处理[专属等级加速包]",
     preconditions: [
         { waitForElementAppearance: idMatches("drawExperienceModule"), preconditionDesc: "等待出现：[按钮] 领取" }
     ],
@@ -459,7 +473,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "处理[大会员装扮权益专区]",
+    id: 6, name: "处理[大会员装扮权益专区]",
     preconditions: [
         { waitForElementAppearance: idMatches("vipEquityZoneModule"), preconditionDesc: "等待出现：[按钮] 立即领取", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
     ],
@@ -471,7 +485,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "跳转至[权益精选页面]",
+    id: 7, name: "跳转至[权益精选页面]",
     preconditions: [
         { waitForElementAppearance: idMatches("vipBenefitsModule"), preconditionDesc: "等待出现：[超链接] 查看更多" }
     ],
@@ -483,7 +497,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "处理[权益精选]",
+    id: 8, name: "处理[权益精选]",
     preconditions: [
         { waitForElementAppearance: text("立即领取"), preconditionDesc: "等待出现：[按钮] 立即领取", timeoutForWaitingSec: 5000, skipIfTimeoutForWaiting: true },
         { waitForElementAppearance: textMatches("(确定|取消)"), preconditionDesc: "等待出现：[按钮] 确定 / 取消" }
@@ -499,13 +513,13 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     repetitive: true
 })
     .addAction({
-    name: "返回至[会员中心]",
+    id: 9, name: "返回至[会员中心]",
     actions: [
         { action: const_1.PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 5000 }
     ]
 })
     .addAction({
-    name: "跳转至[大积分商城页面]",
+    id: 10, name: "跳转至[大积分商城页面]",
     preconditions: [
         { waitForElementAppearance: idMatches("bigPointModule"), preconditionDesc: "等待出现：[超链接] 查看更多" },
         { waitForElementAppearance: textMatches("(做任务得大积分|签到赚大积分.*)"), preconditionDesc: "等待出现：[按钮] 做任务得大积分 / 签到賺大积分" }
@@ -520,7 +534,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     ]
 })
     .addAction({
-    name: "处理[大积分商城]的[按钮]立即领取",
+    id: 11, name: "处理[大积分商城]的[按钮]立即领取",
     preconditions: [
         { waitForElementAppearance: text("立即领取"), preconditionDesc: "等待出现：[按钮] 立即领取", timeoutForWaitingSec: 2000, skipIfTimeoutForWaiting: true }
     ],
@@ -534,7 +548,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     repetitive: true
 })
     .addAction({
-    name: "处理[大积分商城]的[按钮]去完成",
+    id: 12, name: "处理[大积分商城]的[按钮]去完成",
     preconditions: [
         { waitForElementAppearance: text("去完成"), preconditionDesc: "等待出现：[按钮] 去完成", timeoutForWaitingSec: 2000, skipIfTimeoutForWaiting: true }
     ],
@@ -548,7 +562,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("tv.danmaku.bili")
     repetitive: true
 })
     .addAction({
-    name: "返回至[会员中心]",
+    id: 13, name: "返回至[会员中心]",
     actions: [
         { action: const_1.PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 3000 }
     ]

@@ -60,7 +60,7 @@ export class AutoxAutomatorEngine {
             console.info(`[INFO] [Success] Launched Package '${this.packageName}'`);
             sleep(5000);
 
-            this._doInternal();
+            this._doInternal(0, this.actions.length);
 
             console.info("[INFO] ==================================");
             this._kill();
@@ -73,13 +73,25 @@ export class AutoxAutomatorEngine {
     }
 
     test(): void {
-        this._doInternal();
+        console.setCanInput(true);
+        while (true) {
+            let command = console.input("Input Action ID Range (e.g. '1,4') or quit: ");
+            if (command === 'quit') {
+                break;
+            } else {
+                let actionIds = command.split(",");
+                if (actionIds.length !== 2) {
+                    console.error("[ERROR] Invalid input !");
+                } else {
+                    this._doInternal(actionIds[0] - 1, actionIds[1]);
+                }
+            }
+        }
     }
 
-    private _doInternal(): void {
-        const actionTotalCount = this.actions.length;
+    private _doInternal(actionIndex: number, actionTotalCount: number): void {
         let isInterrupted = false;
-        for (let actionIndex = 0; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
+        for (; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
             let currentAction = this.actions[actionIndex];
             console.info("[INFO] ==================================");
             console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Start] ${currentAction.name}`);

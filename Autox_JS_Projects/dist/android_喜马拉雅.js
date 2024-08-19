@@ -60,7 +60,7 @@ var AutoxAutomatorEngine = /** @class */ (function () {
         if (app.launch(this.packageName)) {
             console.info("[INFO] [Success] Launched Package '".concat(this.packageName, "'"));
             sleep(5000);
-            this._doInternal();
+            this._doInternal(0, this.actions.length);
             console.info("[INFO] ==================================");
             this._kill();
             console.info("[INFO] [Success] Killed Package '".concat(this.packageName, "'. Programe is end."));
@@ -71,12 +71,26 @@ var AutoxAutomatorEngine = /** @class */ (function () {
         exit();
     };
     AutoxAutomatorEngine.prototype.test = function () {
-        this._doInternal();
+        console.setCanInput(true);
+        while (true) {
+            var command = console.input("Input Action ID Range (e.g. '1,4') or quit: ");
+            if (command === 'quit') {
+                break;
+            }
+            else {
+                var actionIds = command.split(",");
+                if (actionIds.length !== 2) {
+                    console.error("[ERROR] Invalid input !");
+                }
+                else {
+                    this._doInternal(actionIds[0] - 1, actionIds[1]);
+                }
+            }
+        }
     };
-    AutoxAutomatorEngine.prototype._doInternal = function () {
-        var actionTotalCount = this.actions.length;
+    AutoxAutomatorEngine.prototype._doInternal = function (actionIndex, actionTotalCount) {
         var isInterrupted = false;
-        for (var actionIndex = 0; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
+        for (; !isInterrupted && actionIndex < actionTotalCount; actionIndex++) {
             var currentAction = this.actions[actionIndex];
             console.info("[INFO] ==================================");
             console.info("[INFO] [Action ".concat(actionIndex + 1, "/").concat(actionTotalCount, "] [Start] ").concat(currentAction.name));
@@ -401,7 +415,7 @@ var autox_automator_engine_1 = __webpack_require__(24);
 var const_1 = __webpack_require__(456);
 new autox_automator_engine_1.AutoxAutomatorEngine("com.ximalaya.ting.android")
     .addAction({
-    name: "处理[弹窗广告页面]",
+    id: 1, name: "处理[弹窗广告页面]",
     preconditions: [
         { waitForElementAppearance: id("main_iv_close"), preconditionDesc: "等待出现：[按钮] 关闭弹窗广告", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
     ],
@@ -413,7 +427,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("com.ximalaya.ting.android")
     ]
 })
     .addAction({
-    name: "跳转至[会员特权页面]",
+    id: 2, name: "跳转至[会员特权页面]",
     preconditions: [
         { waitForElementAppearance: id("main_ll_title_bar"), preconditionDesc: "等待出现：[超链接] 会员特权" }
     ],
@@ -425,7 +439,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("com.ximalaya.ting.android")
     ]
 })
     .addAction({
-    name: "处理[会员特权页面]",
+    id: 3, name: "处理[会员特权页面]",
     preconditions: [
         { waitForElementAppearance: text("剩余1次机会"), preconditionDesc: "等待出现：[文本] 剩余1次机会", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
     ],
@@ -438,13 +452,13 @@ new autox_automator_engine_1.AutoxAutomatorEngine("com.ximalaya.ting.android")
     ]
 })
     .addAction({
-    name: "返回[首页]",
+    id: 4, name: "返回[首页]",
     actions: [
         { action: const_1.PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 5000 }
     ]
 })
     .addAction({
-    name: "跳转至[我的页面]",
+    id: 5, name: "跳转至[我的页面]",
     preconditions: [
         { waitForElementAppearance: id("tab_myspace_and_listen"), preconditionDesc: "等待出现：[按钮] 我的" },
         { waitForElementAppearance: id("main_iv_entrance"), preconditionDesc: "等待出现：[按钮] 积分待领取" },
@@ -461,7 +475,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("com.ximalaya.ting.android")
     ]
 })
     .addAction({
-    name: "处理[待领取福利]的[按钮]待领取",
+    id: 6, name: "处理[待领取福利]的[按钮]待领取",
     preconditions: [
         { waitForElementAppearance: text("待领取"), preconditionDesc: "等待出现：[按钮] 待领取", timeoutForWaitingSec: 5000, skipIfTimeoutForWaiting: true },
     ],
@@ -474,7 +488,7 @@ new autox_automator_engine_1.AutoxAutomatorEngine("com.ximalaya.ting.android")
     ]
 })
     .addAction({
-    name: "处理[待领取福利]的[按钮]领取",
+    id: 7, name: "处理[待领取福利]的[按钮]领取",
     preconditions: [
         { waitForElementAppearance: text("领取"), preconditionDesc: "等待出现：[按钮] 领取", timeoutForWaitingSec: 5000, skipIfTimeoutForWaiting: true }
     ],
