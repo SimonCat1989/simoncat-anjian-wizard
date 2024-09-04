@@ -3,7 +3,7 @@ import { AutoxActionDefault, PredefinedAutoxActions } from '../../engine/const';
 
 new AutoxAutomatorEngine("com.ximalaya.ting.android")
     .addAction({
-        id: 1, name: "处理[弹窗广告页面]",
+        name: "处理[弹窗广告页面]",
         preconditions: [
             { waitForElementAppearance: id("main_iv_close"), preconditionDesc: "等待出现：[按钮] 关闭弹窗广告", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
         ],
@@ -15,7 +15,7 @@ new AutoxAutomatorEngine("com.ximalaya.ting.android")
         ]
     })
     .addAction({
-        id: 2, name: "跳转至[会员特权页面]",
+        name: "跳转至[会员特权页面]",
         preconditions: [
             { waitForElementAppearance: id("main_ll_title_bar"), preconditionDesc: "等待出现：[超链接] 会员特权" }
         ],
@@ -27,7 +27,7 @@ new AutoxAutomatorEngine("com.ximalaya.ting.android")
         ]
     })
     .addAction({
-        id: 3, name: "处理[会员特权页面]",
+        name: "处理[会员特权页面]",
         preconditions: [
             { waitForElementAppearance: text("剩余1次机会"), preconditionDesc: "等待出现：[文本] 剩余1次机会", timeoutForWaitingSec: 10000, skipIfTimeoutForWaiting: true }
         ],
@@ -36,17 +36,12 @@ new AutoxAutomatorEngine("com.ximalaya.ting.android")
         ],
         actions: [
             { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 立即抽奖" },
-            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框", sleepSecPostAction: 3000 }
+            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框", sleepSecPostAction: 3000 },
+            { action: PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键" }
         ]
     })
     .addAction({
-        id: 4, name: "返回[首页]",
-        actions: [
-            { action: PredefinedAutoxActions.BACK, actionDesc: "点击：返回按键", sleepSecPostAction: 5000 }
-        ]
-    })
-    .addAction({
-        id: 5, name: "跳转至[我的页面]",
+        name: "跳转至[我的页面]",
         preconditions: [
             { waitForElementAppearance: id("tab_myspace_and_listen"), preconditionDesc: "等待出现：[按钮] 我的" },
             { waitForElementAppearance: id("main_iv_entrance"), preconditionDesc: "等待出现：[按钮] 积分待领取" },
@@ -59,11 +54,11 @@ new AutoxAutomatorEngine("com.ximalaya.ting.android")
         actions: [
             { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 我的" },
             { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 积分待领取" },
-            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框", sleepSecPostAction: 3000 }
+            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框" }
         ]
     })
     .addAction({
-        id: 6, name: "处理[待领取福利]的[按钮]待领取",
+        name: "处理[待领取福利]的[按钮]待领取",
         preconditions: [
             { waitForElementAppearance: text("待领取"), preconditionDesc: "等待出现：[按钮] 待领取", timeoutForWaitingSec: 5000, skipIfTimeoutForWaiting: true },
         ],
@@ -72,11 +67,11 @@ new AutoxAutomatorEngine("com.ximalaya.ting.android")
         ],
         actions: [
             { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 待领取" },
-            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框", sleepSecPostAction: 3000 }
+            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框" }
         ]
     })
     .addAction({
-        id: 7, name: "处理[待领取福利]的[按钮]领取",
+        name: "处理[待领取福利]的[按钮]领取",
         preconditions: [
             { waitForElementAppearance: text("领取"), preconditionDesc: "等待出现：[按钮] 领取", timeoutForWaitingSec: 5000, skipIfTimeoutForWaiting: true }
         ],
@@ -85,7 +80,7 @@ new AutoxAutomatorEngine("com.ximalaya.ting.android")
         ],
         actions: [
             { action: AutoxActionDefault.CLICK, actionDesc: "点击：[按钮] 领取" },
-            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框", sleepSecPostAction: 3000 }
+            { action: PredefinedAutoxActions.CLICK_TOP_MIDDLE, actionDesc: "点击：空白处关闭对话框" }
         ]
     })
     .launch();

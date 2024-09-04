@@ -72,19 +72,19 @@ export class AutoxAutomatorEngine {
         exit();
     }
 
-    test(): void {
-        console.setCanInput(true);
-        while (true) {
-            let command = console.input("Input Action ID Range (e.g. '1,4') or quit: ");
-            if (command === 'quit') {
-                break;
+    /**
+     * 
+     * @param command Input Action ID Range (e.g. '1,4') or single Action ID
+     */
+    test(command: string): void {
+        if (command) {
+            let actionIds = command.split(",");
+            if (actionIds.length == 2) {
+                this._doInternal(+actionIds[0] - 1, +actionIds[1]);
+            } else if (actionIds.length == 1) {
+                this._doInternal(+actionIds[0] - 1, +actionIds[0]);
             } else {
-                let actionIds = command.split(",");
-                if (actionIds.length !== 2) {
-                    console.error("[ERROR] Invalid input !");
-                } else {
-                    this._doInternal(actionIds[0] - 1, actionIds[1]);
-                }
+                console.error("[ERROR] Invalid input !");
             }
         }
     }
@@ -102,11 +102,12 @@ export class AutoxAutomatorEngine {
                 const subPreconditionTotal = currentAction.preconditions.length;
                 const subTargetTotal = currentAction.targets.length;
                 let subActionIndex = 0;
-                let isSkippedSubAction = false;
+                let isSkippedAllSubActions = false;
 
-                while (!isSkippedSubAction && subActionIndex < subActionTotal) {
+                while (!isSkippedAllSubActions && subActionIndex < subActionTotal) {
                     let currentSubAction = currentAction.actions[subActionIndex];
-                    
+                    let isSkippedSubAction = false;
+                    console.info("[INFO] ----------------------------------");
                     // Pause before taking sub-action
                     sleep(currentSubAction.sleepSecPreAction);
 
@@ -116,8 +117,13 @@ export class AutoxAutomatorEngine {
                         console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Start] ${currentSubPrecondition.preconditionDesc}.`);
                         if (!this._waitForPreconditions(currentSubPrecondition)) {
                             if (currentSubPrecondition.skipIfTimeoutForWaiting) {
-                                console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Timeout] ${currentSubPrecondition.preconditionDesc}.`);
                                 isSkippedSubAction = true;
+                                if (currentSubPrecondition.skipAllIfTimeoutForWaiting) {
+                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Timeout] ${currentSubPrecondition.preconditionDesc}, skip all.`);
+                                    isSkippedAllSubActions = true;
+                                } else {
+                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Timeout] ${currentSubPrecondition.preconditionDesc}, skip it.`);
+                                }
                             } else {
                                 console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Pre-Condition] [Failed] ${currentSubPrecondition.preconditionDesc}, exit.`);
                                 isInterrupted = true;
@@ -146,16 +152,24 @@ export class AutoxAutomatorEngine {
                                     if (this._recursivlyDoAction(baseObject, currentSubTarget.targetDesc, currentSubAction.action, currentSubAction.actionDesc)) {
                                         console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Success] ${currentSubAction.actionDesc}`);
                                     } else if (currentSubAction.skipIfActionFailed) {
-                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}.`);
-                                        isSkippedSubAction = true;
+                                        if (currentSubAction.skipAllIfActionFailed) {
+                                            console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}, skip all.`);
+                                            isSkippedAllSubActions = true;
+                                        } else {
+                                            console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}, skip it.`);
+                                        }
                                     } else {
                                         console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Failed] ${currentSubAction.actionDesc}, exit.`);
                                         isInterrupted = true;
                                         break;
                                     }
                                 } else if (currentSubTarget.skipIfTargetNonExistent) {
-                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Timeout] ${currentSubTarget.targetDesc}.`);
-                                    isSkippedSubAction = true;
+                                    if (currentSubTarget.skipAllIfTargetNonExistent) {
+                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Timeout] ${currentSubTarget.targetDesc}, skip all.`);
+                                        isSkippedAllSubActions = true;
+                                    } else {
+                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Timeout] ${currentSubTarget.targetDesc}, skip it.`);
+                                    }
                                 } else {
                                     console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [UI-Object] [Failed] ${currentSubTarget.targetDesc}, exit.`);
                                     isInterrupted = true;
@@ -169,7 +183,12 @@ export class AutoxAutomatorEngine {
                                 if (currentSubAction.action()) {
                                     console.info(`[INFO] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Success] ${currentSubAction.actionDesc}.`);
                                 } else if (currentSubAction.skipIfActionFailed) {
-                                    console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}.`);
+                                    if (currentSubAction.skipAllIfActionFailed) {
+                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}, skip all.`);
+                                        isSkippedAllSubActions = true;
+                                    } else {
+                                        console.warn(`[WARN] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Skip] ${currentSubAction.actionDesc}, skip it.`);
+                                    }
                                 } else {
                                     console.error(`[ERROR] [Action ${actionIndex + 1}/${actionTotalCount}] [Step ${subActionIndex + 1}/${subActionTotal}] [Job] [Failed] ${currentSubAction.actionDesc}, exit.`);
                                     isInterrupted = true;
@@ -190,7 +209,7 @@ export class AutoxAutomatorEngine {
 
                     // Reset the index if repetitive is true
                     subActionIndex++;
-                    if (currentAction.repetitive && subActionIndex === subActionTotal && subPreconditionTotal > 0 && this._waitForPreconditions(currentAction.preconditions[0])) {
+                    if (currentAction.repetitive && subActionIndex === subActionTotal) {
                         subActionIndex = 0;
                     }
                 }
@@ -294,15 +313,18 @@ export class AutoxAutomatorEngine {
         action.preconditions.forEach((pre) => {
             pre.timeoutForWaitingSec = pre.timeoutForWaitingSec === undefined ? DEFAULT_MAX_WAIT_FOR_PRECONDITIONS_SEC : pre.timeoutForWaitingSec;
             pre.skipIfTimeoutForWaiting = pre.skipIfTimeoutForWaiting === undefined ? false : pre.skipIfTimeoutForWaiting;
+            pre.skipAllIfTimeoutForWaiting = pre.skipAllIfTimeoutForWaiting === undefined ? true : pre.skipAllIfTimeoutForWaiting;
         });
 
         action.targets.forEach((tar) => {
             tar.skipIfTargetNonExistent = tar.skipIfTargetNonExistent === undefined ? false : tar.skipIfTargetNonExistent;
+            tar.skipAllIfTargetNonExistent = tar.skipAllIfTargetNonExistent === undefined ? true : tar.skipAllIfTargetNonExistent;
             tar.maxWaitForFindingTargetSec = tar.maxWaitForFindingTargetSec === undefined ? DEFAULT_MAX_WAIT_FOR_FINDING_SEC : tar.maxWaitForFindingTargetSec;
         });
 
         action.actions.forEach((act) => {
             act.skipIfActionFailed = act.skipIfActionFailed === undefined ? false : act.skipIfActionFailed;
+            act.skipAllIfActionFailed = act.skipAllIfActionFailed === undefined ? true : act.skipAllIfActionFailed;
             act.sleepSecPreAction = act.sleepSecPreAction === undefined ? DEFAULT_SLEEP_SEC_PRE_ACTION : act.sleepSecPreAction;
             act.sleepSecPostAction = act.sleepSecPostAction === undefined ? DEFAULT_SLEEP_SEC_POST_ACTION : act.sleepSecPostAction;
         });
@@ -320,14 +342,14 @@ export class AutoxAutomatorEngine {
 
     private _init() {
         auto();
-        device.wakeUpIfNeeded();
+        device.keepScreenOn(600000);
         // Wait for device up completely
         sleep(10000);
 
         setScreenMetrics(1080, 2040);
-        console.show();
+        console.hide();
         sleep(200); //等待一会，才能设置尺寸成功
-        console.setPosition(0, 0);
+        console.setPosition(0, 150);
         console.setSize(device.width, device.height / 3);
         console.log(""); //刷新显示，解决尺寸无法无法刷新的问题
     }
@@ -343,10 +365,11 @@ export class AutoxAutomatorEngine {
         text("强行停止").findOne().click();
         // Confirm the termination in dialog
         sleep(500);
-        text("强行停止").findOne().click();
+        textMatches("(确定|强行停止)").findOne().click();
         // Back to home page
         sleep(500);
         back();
         console.hide();
+        device.cancelKeepingAwake();
     }
 }
