@@ -59,7 +59,7 @@ export class SMSCodeExtractor {
 
     private static extract(notification: AutoJs.Notification): SMSCodeExtractedResponse {
         let rawMessage = notification.getText();
-        if (!rawMessage || !rawMessage.includes('验证码')) {
+        if (!rawMessage || rawMessage.indexOf('验证码') === -1) {
             return new SMSCodeExtractedResponse(SMSCodeExtractionExitCode.INVALID_MESSAGE, `未在消息中找到验证码信息，请确认该消息：${rawMessage}`);
         } else {
             let match = SMSCodeRegex.exec(rawMessage);

@@ -8,6 +8,7 @@ module.exports = {
     android_喜马拉雅: ['./src/app/Android_喜马拉雅/main.ts'],
     android_bilibili: ['./src/app/Andoird_bilibili/main.ts'],
     android_京东: ['./src/app/Android_京东/main.ts'],
+    android_卡通农场: ['./src/app/Android_卡通农场/main.ts'],
   },
   output: {
     filename: '[name].js',
